@@ -131,29 +131,67 @@ where AlbumID in (select AlbumId from tracks where GenreId = (select GenreId fro
 -- 'Rock' 장르의 '모든' 트랙보다 재생시간이 긴 트랙의 이름을 조회하세요.
 -- SQLite 미지원: WHERE Milliseconds > ALL (SELECT Milliseconds ...)
 -- 대체: ALL → MAX (모든 값보다 크다 = 최댓값보다 크다)
+-- 메인쿼리: 트랙의 이름
+-- 서브쿼리: Rock 장르의 모든 트랙보다 재생시간이 긴
+select Name, Milliseconds
+from tracks
+where Milliseconds > (
+    select max(Milliseconds) 
+    from tracks
+    where GenreId = (
+        select GenreId 
+        from genres 
+        where Name = 'Rock'
+        )
+        );
+
+
 
 -- 문제 12.  (강의자료의 ANY 개념)
 -- 'Jazz' 장르 트랙 중 '하나라도'보다 재생시간이 긴 트랙의 이름을 조회하세요.
 -- SQLite 미지원: WHERE Milliseconds > ANY (...)
 -- 대체: ANY → MIN (하나라도보다 크다 = 최솟값보다 크다)
-
+select Name, Milliseconds
+from tracks
+where Milliseconds > (
+    select min(Milliseconds) 
+    from tracks
+    where GenreId = (
+        select GenreId 
+        from genres 
+        where Name = 'Jazz'
+        )
+        );
 
 /* ============  03. 위치에 따른 분류 — 스칼라 서브쿼리 (SELECT 절)  ===== */
 
 -- 문제 13.
 -- 각 앨범의 제목과, 그 앨범에 속한 트랙 수를 스칼라 서브쿼리로 함께
 -- 조회하세요. (상관 서브쿼리: 바깥의 a.AlbumId 참조)
+-- 메인 쿼리: 앨범의 제목, 트랙수
+select a.Title, (
+    select count(*) 
+    from tracks t 
+    where a.AlbumID = t.AlbumID
+    ) as track_cnt
+from albums a;
 
 -- 문제 14.
 -- 각 고객의 이름과, 그 고객의 총 결제 금액(SUM(Total))을 스칼라 서브쿼리로
 -- 조회하세요.
+select c.FirstName, (select sum(i.Total) from invoices i where c.CustomerId = i.CustomerId) as total
+from customers c;
 
 -- 문제 15.
 -- 각 트랙의 이름과, 그 트랙이 속한 앨범 제목을 스칼라 서브쿼리로 조회하세요.
 -- (강의자료 포인트: 스칼라 서브쿼리는 JOIN과 같은 결과)
+select t.Name, (select a.Title from albums a where t.AlbumID = a.AlbumID) 
+from tracks t;
 
 -- 문제 15-1.  (참고) 위 문제 15를 JOIN으로 바꾼 동일 결과
-
+SELECT t.Name, al.Title AS album_title
+FROM tracks t
+LEFT JOIN albums al ON al.AlbumId = t.AlbumId;
 
 /* -------------  [보강] FROM 절 서브쿼리 (파생 테이블, 별칭 필수)  ------- */
 
@@ -164,6 +202,10 @@ where AlbumID in (select AlbumId from tracks where GenreId = (select GenreId fro
 -- 문제 17.
 -- 국가별 매출 합계를 구한 파생 테이블에서, 매출이 높은 상위 5개 국가를
 -- 조회하세요.
+select BillingCountry from 
+(
+    select BillingCountry, sum(Total) from invoices group by BillingCountry order by 2 desc limit 5
+);
 
 
 /* ----------------  [보강] EXISTS / 상관 서브쿼리  -------------------- */
