@@ -18,6 +18,18 @@
             "driver": "SQLite",
             "name": "classicmodels",
             "database": "${workspaceFolder:yeardreamschool6th}/datasets/classicmodels.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "school_db",
+            "database": "${workspaceFolder:yeardreamschool6th}/datasets/school_db.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "favorited_team_statistics",
+            "database": "${workspaceFolder:yeardreamschool6th}/datasets/favorited_team_statistics.db"
         }
     ]
 }
