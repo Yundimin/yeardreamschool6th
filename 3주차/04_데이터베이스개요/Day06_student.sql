@@ -89,11 +89,25 @@ CREATE TABLE enrollment (
     FOREIGN KEY (course_id)  REFERENCES course(course_id)
 );
 
--- ============================================================
--- 예제 01: NOT NULL 제약 시연 - 필수 입력 값
+-- 커밋 : 수정, 삭제, 갱신 등 작업이 완료되면 DB에 최종 반영
+-- COMMIT;
 
 -- ============================================================
+-- 예제 01: NOT NULL 제약 시연 - 필수 입력 값
+INSERT INTO department (dept_id, dept_name, location)
+VALUES 
+    ('CSE', '컴퓨터공학과', '공학관 3층'), -- 정상
+    ('MATH', '수학과', '미정') -- location 입력을 안하더라도 자동으로 추가
+;
+
+SELECT * from department;
+-- ============================================================
 -- 예제 02: NOT NULL 위반 시 에러 발생 확인
+INSERT INTO department (dept_id, dept_name, location)
+VALUES 
+    ('CSE', '컴퓨터공학과', '공학관 3층'), -- 정상
+    ('MATH', '수학과', '미정') -- location 입력을 안하더라도 자동으로 추가
+;
 
 -- ============================================================
 -- 예제 03: UNIQUE 제약 시연 - 중복 이메일 금지
